@@ -5,25 +5,17 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Log Habits</title>
   <link rel="stylesheet" href="style.css" />
-  <script>
-    // JavaScript to set default date to today
-    window.addEventListener('DOMContentLoaded', () => {
-      const today = new Date().toISOString().split('T')[0]; 
-      document.getElementById('dateField').value = today;
-    });
-  </script>
 </head>
 <body>
-
   <h1>Log Habits</h1>
-  
-  <form>
+
+  <form id="habitForm"><!-- Changed form to have an id for JS -->
     <!-- Date Field -->
     <label for="dateField">Date:</label>
     <input type="date" id="dateField" name="date" />
     <br /><br />
-    
-    <!-- Water Slider (0 ml - 5 L) -->
+
+    <!-- Water Slider (0ml - 5L) -->
     <label for="waterSlider">Water (0ml - 5L):</label>
     <input type="range" id="waterSlider" name="water" min="0" max="5000" value="0" />
     <br /><br />
@@ -55,5 +47,7 @@
     <button type="submit">Submit</button>
   </form>
 
+  <!-- Link to the external JS file -->
+  <script src="script.js"></script>
 </body>
 </html>
