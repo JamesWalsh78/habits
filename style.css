@@ -1,0 +1,75 @@
+/* General resets */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: sans-serif;
+  padding: 1rem;
+  background-color: #f5f5f5;
+}
+
+/* Page heading */
+h1 {
+  text-align: center;
+  margin-bottom: 1rem;
+}
+
+/* Container for the tiles on the home page */
+.tile-container {
+  display: grid;
+  grid-template-columns: 1fr 1fr; /* 2 columns */
+  grid-gap: 1rem;
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+/* Tile styling */
+.tile {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
+  color: #fff;
+  background-color: #3498db;
+  height: 100px;
+  font-size: 1.2rem;
+  border-radius: 8px;
+}
+
+/* Form styling */
+form {
+  display: flex;
+  flex-direction: column;
+  max-width: 300px;
+  margin: 0 auto;
+}
+
+label {
+  margin-bottom: 0.3rem;
+}
+
+input[type="date"],
+select,
+button {
+  margin-bottom: 1rem;
+  padding: 0.5rem;
+}
+
+input[type="range"] {
+  width: 100%;
+  margin-bottom: 1rem;
+}
+
+/* Mobile responsiveness */
+@media (max-width: 600px) {
+  .tile-container {
+    grid-template-columns: 1fr 1fr; /* Remain 2 columns but scale down on smaller screens */
+  }
+  .tile {
+    height: 80px;
+    font-size: 1rem;
+  }
+}
