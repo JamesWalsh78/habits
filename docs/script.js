@@ -1,4 +1,4 @@
-// script.js - Handles form submission to the backend
+// script.js - Updated to ensure form submits correctly
 
 document.addEventListener("DOMContentLoaded", () => {
   const today = new Date().toISOString().split("T")[0];
@@ -17,23 +17,24 @@ document.addEventListener("DOMContentLoaded", () => {
       friends: document.getElementById("friendsDropdown").value,
     };
 
+    const backendURL = "https://your-app-name.onrender.com/api/habits"; // Update with your actual Render URL
+
     try {
-      const response = await fetch('https://habits-y6qj.onrender.com', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+      const response = await fetch(backendURL, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify(formData),
       });
 
       if (response.ok) {
-        alert('Data submitted successfully!');
+        alert('✅ Data submitted successfully!');
       } else {
-        alert('Error submitting data.');
+        const errorData = await response.json();
+        alert(`❌ Error: ${errorData.message || 'Submission failed.'}`);
       }
     } catch (error) {
-      console.error('Request failed', error);
-      alert('Failed to connect to the server.');
+      console.error("Request failed", error);
+      alert("❌ Failed to connect to the server.");
     }
   });
 });

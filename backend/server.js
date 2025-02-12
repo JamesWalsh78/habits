@@ -1,4 +1,4 @@
-// server.js - Node.js backend to handle form submission and save to Excel
+// server.js - Updated to ensure backend is reachable
 
 const express = require('express');
 const cors = require('cors');
@@ -6,13 +6,18 @@ const xlsx = require('xlsx');
 const fs = require('fs');
 
 const app = express();
-app.use(cors()); // Allow cross-origin requests
-app.use(express.json()); // Parse JSON body
+app.use(cors({ origin: '*' })); // Allow all origins
+app.use(express.json()); // Enable JSON request body parsing
 
 const FILE_NAME = 'habits_data.xlsx';
 const SHEET_NAME = 'Habits';
 
-// Handle POST requests
+// ✅ Test Route - Ensures backend is running
+app.get("/", (req, res) => {
+  res.send("Backend is working!");
+});
+
+// ✅ POST Route - Receives habit form data
 app.post('/api/habits', (req, res) => {
   const data = req.body;
 
@@ -47,16 +52,17 @@ app.post('/api/habits', (req, res) => {
   res.status(200).json({ message: 'Data saved successfully' });
 });
 
-// Start the server
-const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
-});
-
+// ✅ GET Route - Allows downloading the Excel file
 app.get('/api/download-excel', (req, res) => {
   if (fs.existsSync(FILE_NAME)) {
     res.download(FILE_NAME);
   } else {
     res.status(404).send('No data found.');
   }
+});
+
+// ✅ Ensure Render Uses the Correct Port
+const PORT = process.env.PORT || 10000;
+app.listen(PORT, () => {
+  console.log(`Server running on port ${PORT}`);
 });
