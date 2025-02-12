@@ -32,7 +32,7 @@ document.addEventListener("DOMContentLoaded", () => {
     // Send data to your backend (e.g. Render) for processing
     // Replace 'https://your-app-name.onrender.com/api/habits' with your actual endpoint
     try {
-      const response = await fetch('https://your-app-name.onrender.com/api/habits', {
+      const response = await fetch('https://habits-y6qj.onrender.com', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
