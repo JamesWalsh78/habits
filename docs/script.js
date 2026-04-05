@@ -42,22 +42,23 @@ document.addEventListener("DOMContentLoaded", () => {
 
 const STORAGE_KEY = "walsh-diet-autumn-2026.entries";
 const SCREEN_KEY = "walsh-diet-autumn-2026.screen";
+const DIET_START_DATE = "2026-04-06";
 const METRIC_KEYS = [
   "calories",
+  "water",
+  "creatine",
   "protein",
   "carbs",
   "fats",
-  "water",
   "exercise",
   "steps",
-  "pages",
+  "meditation",
+  "reading",
   "spanish",
   "screenTime",
   "wakeTime",
   "bedTime",
 ];
-const CHART_WINDOW = 21;
-const chartStore = {};
 
 const dom = {};
 const state = { entries: {} };
@@ -65,6 +66,7 @@ const state = { entries: {} };
 document.addEventListener("DOMContentLoaded", () => {
   cacheDom();
   state.entries = loadEntries();
+  populateTimeSelects();
   bindEvents();
   switchScreen(localStorage.getItem(SCREEN_KEY) || "overview");
   loadFormForDate(getTodayLocalDate());
@@ -96,21 +98,43 @@ function cacheDom() {
 
   dom.fields = {
     date: document.getElementById("date"),
+    wakeTime: document.getElementById("wakeTime"),
+    bedTime: document.getElementById("bedTime"),
     calories: document.getElementById("calories"),
+    water: document.getElementById("water"),
+    creatine: document.getElementById("creatine"),
     protein: document.getElementById("protein"),
     carbs: document.getElementById("carbs"),
     fats: document.getElementById("fats"),
-    water: document.getElementById("water"),
-    steps: document.getElementById("steps"),
     runKm: document.getElementById("runKm"),
     swimKm: document.getElementById("swimKm"),
     gym: document.getElementById("gym"),
-    pages: document.getElementById("pages"),
+    steps: document.getElementById("steps"),
+    meditation: document.getElementById("meditation"),
+    reading: document.getElementById("reading"),
     spanish: document.getElementById("spanish"),
     screenTime: document.getElementById("screenTime"),
-    wakeTime: document.getElementById("wakeTime"),
-    bedTime: document.getElementById("bedTime"),
   };
+}
+
+function populateTimeSelects() {
+  const selects = [dom.fields.wakeTime, dom.fields.bedTime];
+
+  selects.forEach((select) => {
+    if (!select) {
+      return;
+    }
+
+    const placeholder = '<option value="">Select time</option>';
+    const options = [];
+
+    for (let minutes = 0; minutes < 1440; minutes += 5) {
+      const value = minutesToTimeValue(minutes);
+      options.push(`<option value="${value}">${formatTimeSelectLabel(minutes)}</option>`);
+    }
+
+    select.innerHTML = `${placeholder}${options.join("")}`;
+  });
 }
 
 function bindEvents() {
@@ -196,40 +220,44 @@ function loadFormForDate(date) {
 function getEmptyForm(date) {
   return {
     date,
+    wakeTime: "",
+    bedTime: "",
     calories: "",
+    water: "",
+    creatine: "",
     protein: "",
     carbs: "",
     fats: "",
-    water: "",
-    steps: "",
     runKm: "",
     swimKm: "",
     gym: "None",
-    pages: "",
+    steps: "",
+    meditation: "",
+    reading: "",
     spanish: "",
     screenTime: "",
-    wakeTime: "",
-    bedTime: "",
   };
 }
 
 function readForm() {
   return {
     date: dom.fields.date.value,
+    wakeTime: dom.fields.wakeTime.value,
+    bedTime: dom.fields.bedTime.value,
     calories: numberValue(dom.fields.calories.value),
+    water: numberValue(dom.fields.water.value),
+    creatine: dom.fields.creatine.value,
     protein: numberValue(dom.fields.protein.value),
     carbs: numberValue(dom.fields.carbs.value),
     fats: numberValue(dom.fields.fats.value),
-    water: numberValue(dom.fields.water.value),
-    steps: numberValue(dom.fields.steps.value),
     runKm: numberValue(dom.fields.runKm.value),
     swimKm: numberValue(dom.fields.swimKm.value),
     gym: dom.fields.gym.value || "None",
-    pages: numberValue(dom.fields.pages.value),
+    steps: numberValue(dom.fields.steps.value),
+    meditation: numberValue(dom.fields.meditation.value),
+    reading: numberValue(dom.fields.reading.value),
     spanish: numberValue(dom.fields.spanish.value),
     screenTime: numberValue(dom.fields.screenTime.value),
-    wakeTime: dom.fields.wakeTime.value,
-    bedTime: dom.fields.bedTime.value,
   };
 }
 
@@ -259,7 +287,6 @@ function renderAll() {
   renderEntryList();
   renderTotals();
   renderHeatmap();
-  renderCharts();
 }
 
 function renderHeroSummary() {
@@ -282,7 +309,7 @@ function renderEntryList() {
   const entries = getSortedEntries().slice().reverse();
 
   if (!entries.length) {
-    dom.entryList.innerHTML = '<div class="empty-state">No entries yet. Save your first day to unlock editing, totals, and charts.</div>';
+    dom.entryList.innerHTML = '<div class="empty-state">No entries yet. Save your first day to unlock editing and results.</div>';
     return;
   }
 
@@ -292,21 +319,9 @@ function renderEntryList() {
       const overall = evaluateEntry(entry).overall.status;
       return `
         <article class="entry-item">
-          <div class="entry-item__top">
-            <div>
-              <div class="entry-item__title">${formatDateHuman(entry.date)}</div>
-              <div class="entry-item__facts">
-                ${entry.calories} kcal . ${entry.protein}g protein . ${formatNumber(entry.steps)} steps
-              </div>
-            </div>
-            <span class="status-pill status-pill--${overall}">${labelForStatus(overall)}</span>
-          </div>
-          <div class="entry-item__meta">
-            <div class="entry-item__facts">
-              Water ${entry.water.toFixed(1)}L . Run ${entry.runKm.toFixed(1)}km . Swim ${entry.swimKm.toFixed(1)}km . Gym ${entry.gym}
-            </div>
-            <button type="button" class="entry-item__edit" data-edit-date="${entry.date}">Edit</button>
-          </div>
+          <div class="entry-item__title">${formatDateHuman(entry.date)}</div>
+          <span class="status-pill status-pill--${overall}">${labelForStatus(overall)}</span>
+          <button type="button" class="entry-item__edit" data-edit-date="${entry.date}">Edit</button>
         </article>
       `;
     })
@@ -322,30 +337,40 @@ function renderTotals() {
   }
 
   const statusCounts = countOverallStatuses(entries);
+  const daysTracked = entries.length;
+  const creatineYesDays = entries.filter((entry) => entry.creatine === "Y").length;
+  const gymSessions = entries.filter((entry) => entry.gym !== "None").length;
+  const missedDays = countMissedDays(entries);
   const cards = [
-    ["Days tracked", entries.length, "Saved days"],
-    ["Green days", statusCounts.green, "High-quality days"],
-    ["Calories", formatNumber(sum(entries, "calories")), "All-time kcal"],
-    ["Protein", `${formatNumber(sum(entries, "protein"))}g`, "All-time protein"],
-    ["Carbs", `${formatNumber(sum(entries, "carbs"))}g`, "All-time carbs"],
-    ["Fats", `${formatNumber(sum(entries, "fats"))}g`, "All-time fats"],
-    ["Water", `${sum(entries, "water").toFixed(1)}L`, "All-time hydration"],
-    ["Steps", formatNumber(sum(entries, "steps")), "All-time steps"],
-    ["Run", `${sum(entries, "runKm").toFixed(1)}km`, "All-time distance"],
-    ["Swim", `${sum(entries, "swimKm").toFixed(1)}km`, "All-time distance"],
-    ["Gym", entries.filter((entry) => entry.gym !== "None").length, "Sessions logged"],
-    ["Pages", formatNumber(sum(entries, "pages")), "Pages read"],
-    ["Spanish", `${formatNumber(sum(entries, "spanish"))} mins`, "Practice time"],
-    ["Screentime", `${formatNumber(sum(entries, "screenTime"))} mins`, "Minutes logged"],
+    ["Days tracked", daysTracked, "Saved days", ""],
+    ["Green days", statusCounts.green, "High-quality days", ""],
+    ["Amber days", statusCounts.amber, "Mixed days", ""],
+    ["Red days", statusCounts.red, "Off-target days", ""],
+    ["Days missed", missedDays, "Missing before today since 6 Apr 2026", ""],
+    ["Calories", formatNumber(sum(entries, "calories")), "Total kcal", `Avg ${formatNumber(Math.round(average(entries, "calories")))} per day`],
+    ["Water", `${sum(entries, "water").toFixed(1)}L`, "Total water", `Avg ${average(entries, "water").toFixed(1)}L per day`],
+    ["Creatine", creatineYesDays, "Yes days", `Avg ${formatPercent(creatineYesDays / daysTracked)} yes`],
+    ["Protein", `${formatNumber(sum(entries, "protein"))}g`, "Total protein", `Avg ${formatNumber(Math.round(average(entries, "protein")))}g per day`],
+    ["Carbs", `${formatNumber(sum(entries, "carbs"))}g`, "Total carbs", `Avg ${formatNumber(Math.round(average(entries, "carbs")))}g per day`],
+    ["Fats", `${formatNumber(sum(entries, "fats"))}g`, "Total fats", `Avg ${formatNumber(Math.round(average(entries, "fats")))}g per day`],
+    ["Run", `${sum(entries, "runKm").toFixed(1)}km`, "Total distance", `Avg ${average(entries, "runKm").toFixed(1)}km per day`],
+    ["Swim", `${sum(entries, "swimKm").toFixed(1)}km`, "Total distance", `Avg ${average(entries, "swimKm").toFixed(1)}km per day`],
+    ["Gym", gymSessions, "Sessions logged", `Avg ${(gymSessions / daysTracked).toFixed(2)} per day`],
+    ["Steps", formatNumber(sum(entries, "steps")), "Total steps", `Avg ${formatNumber(Math.round(average(entries, "steps")))} per day`],
+    ["Meditation", `${formatNumber(sum(entries, "meditation"))} mins`, "Total minutes", `Avg ${formatNumber(Math.round(average(entries, "meditation")))} mins per day`],
+    ["Reading", formatNumber(sum(entries, "reading")), "Total pages", `Avg ${formatNumber(Math.round(average(entries, "reading")))} pages per day`],
+    ["Spanish", `${formatNumber(sum(entries, "spanish"))} mins`, "Total minutes", `Avg ${formatNumber(Math.round(average(entries, "spanish")))} mins per day`],
+    ["Screentime", `${formatNumber(sum(entries, "screenTime"))} mins`, "Total minutes", `Avg ${formatNumber(Math.round(average(entries, "screenTime")))} mins per day`],
   ];
 
   dom.totalsGrid.innerHTML = cards
     .map(
-      ([label, value, detail]) => `
+      ([label, value, detail, averageText]) => `
         <article class="total-card">
           <span>${label}</span>
           <strong>${value}</strong>
           <p>${detail}</p>
+          ${averageText ? `<p>${averageText}</p>` : ""}
         </article>
       `
     )
@@ -354,17 +379,29 @@ function renderTotals() {
 
 function renderHeatmap() {
   const today = new Date(`${getTodayLocalDate()}T00:00:00`);
+  const start = new Date(today);
+  start.setDate(today.getDate() - 27);
+  const displayStart = new Date(start);
+  displayStart.setDate(start.getDate() - getMondayIndex(start));
+  const displayEnd = new Date(today);
+  displayEnd.setDate(today.getDate() + (6 - getMondayIndex(today)));
   const cells = [];
 
-  for (let offset = 41; offset >= 0; offset -= 1) {
-    const date = new Date(today);
-    date.setDate(today.getDate() - offset);
+  for (const date = new Date(displayStart); date <= displayEnd; date.setDate(date.getDate() + 1)) {
     const key = formatDateKey(date);
+    const inWindow = date >= start && date <= today;
+
+    if (!inWindow) {
+      cells.push('<div class="heatmap-day heatmap-day--placeholder"><div class="heatmap-day__dot"></div><div class="heatmap-day__label">0</div></div>');
+      continue;
+    }
+
     const entry = state.entries[key];
     const status = entry ? evaluateEntry(entry).overall.status : "neutral";
+    const todayClass = key === getTodayLocalDate() ? " heatmap-day--today" : "";
 
     cells.push(`
-      <div class="heatmap-day heatmap-day--${status}">
+      <div class="heatmap-day heatmap-day--${status}${todayClass}">
         <div class="heatmap-day__dot" title="${key}"></div>
         <div class="heatmap-day__label">${date.getDate()}</div>
       </div>
@@ -374,391 +411,18 @@ function renderHeatmap() {
   dom.heatmap.innerHTML = cells.join("");
 }
 
-function renderCharts() {
-  const entries = getSortedEntries();
-  renderStatusChart(entries);
-  renderCalorieChart(entries);
-  renderMacroChart(entries);
-  renderMovementChart(entries);
-  renderHabitChart(entries);
-  renderSleepChart(entries);
-}
-
-function renderStatusChart(entries) {
-  const hasData = entries.length > 0;
-  setChartState("statusChart", hasData, "Save a few days to unlock this chart.");
-  if (!hasData) {
-    destroyChart("statusChart");
-    return;
-  }
-
-  const counts = countOverallStatuses(entries);
-  upsertChart("statusChart", {
-    type: "doughnut",
-    data: {
-      labels: ["Green", "Amber", "Red"],
-      datasets: [
-        {
-          data: [counts.green, counts.amber, counts.red],
-          backgroundColor: ["#2f7a52", "#c6811f", "#b4533f"],
-          borderWidth: 0,
-        },
-      ],
-    },
-    options: baseChartOptions({
-      plugins: {
-        legend: { position: "bottom" },
-      },
-      cutout: "66%",
-    }),
-  });
-}
-
-function renderCalorieChart(entries) {
-  const recent = entries.slice(-CHART_WINDOW);
-  const hasData = recent.length > 0;
-  setChartState("calorieChart", hasData, "Save a few days to unlock this chart.");
-  if (!hasData) {
-    destroyChart("calorieChart");
-    return;
-  }
-
-  upsertChart("calorieChart", {
-    type: "line",
-    data: {
-      labels: recent.map((entry) => formatDateShort(entry.date)),
-      datasets: [
-        {
-          label: "Calories",
-          data: recent.map((entry) => entry.calories),
-          borderColor: "#b4533f",
-          backgroundColor: "rgba(180, 83, 63, 0.16)",
-          fill: true,
-          tension: 0.32,
-          pointRadius: 3,
-        },
-        {
-          label: "Lower target",
-          data: recent.map(() => 1900),
-          borderColor: "rgba(47, 122, 82, 0.56)",
-          borderDash: [6, 6],
-          pointRadius: 0,
-        },
-        {
-          label: "Upper target",
-          data: recent.map(() => 2200),
-          borderColor: "rgba(47, 122, 82, 0.56)",
-          borderDash: [6, 6],
-          pointRadius: 0,
-        },
-      ],
-    },
-    options: baseChartOptions({
-      scales: {
-        y: { suggestedMin: 1400, suggestedMax: 2600 },
-      },
-    }),
-  });
-}
-
-function renderMacroChart(entries) {
-  const recent = entries.slice(-CHART_WINDOW);
-  const hasData = recent.length > 0;
-  setChartState("macroChart", hasData, "Save a few days to unlock this chart.");
-  if (!hasData) {
-    destroyChart("macroChart");
-    return;
-  }
-
-  upsertChart("macroChart", {
-    type: "line",
-    data: {
-      labels: recent.map((entry) => formatDateShort(entry.date)),
-      datasets: [
-        {
-          label: "Protein",
-          data: recent.map((entry) => entry.protein),
-          borderColor: "#2f7a52",
-          backgroundColor: "rgba(47, 122, 82, 0.14)",
-          tension: 0.3,
-          pointRadius: 3,
-        },
-        {
-          label: "Carbs",
-          data: recent.map((entry) => entry.carbs),
-          borderColor: "#c6811f",
-          backgroundColor: "rgba(198, 129, 31, 0.14)",
-          tension: 0.3,
-          pointRadius: 3,
-        },
-        {
-          label: "Fats",
-          data: recent.map((entry) => entry.fats),
-          borderColor: "#7f8f3e",
-          backgroundColor: "rgba(127, 143, 62, 0.14)",
-          tension: 0.3,
-          pointRadius: 3,
-        },
-      ],
-    },
-    options: baseChartOptions({
-      scales: {
-        y: { suggestedMin: 0, suggestedMax: 320 },
-      },
-    }),
-  });
-}
-
-function renderMovementChart(entries) {
-  const recent = entries.slice(-CHART_WINDOW);
-  const hasData = recent.length > 0;
-  setChartState("movementChart", hasData, "Save a few days to unlock this chart.");
-  if (!hasData) {
-    destroyChart("movementChart");
-    return;
-  }
-
-  const distanceMax = Math.max(5, ...recent.map((entry) => entry.runKm), ...recent.map((entry) => entry.swimKm));
-  upsertChart("movementChart", {
-    data: {
-      labels: recent.map((entry) => formatDateShort(entry.date)),
-      datasets: [
-        {
-          type: "line",
-          label: "Steps",
-          data: recent.map((entry) => entry.steps),
-          borderColor: "#7f8f3e",
-          backgroundColor: "rgba(127, 143, 62, 0.14)",
-          yAxisID: "y",
-          tension: 0.28,
-          pointRadius: 3,
-        },
-        {
-          type: "bar",
-          label: "Run km",
-          data: recent.map((entry) => entry.runKm),
-          backgroundColor: "rgba(180, 83, 63, 0.62)",
-          borderRadius: 8,
-          yAxisID: "y1",
-        },
-        {
-          type: "bar",
-          label: "Swim km",
-          data: recent.map((entry) => entry.swimKm),
-          backgroundColor: "rgba(47, 122, 82, 0.62)",
-          borderRadius: 8,
-          yAxisID: "y1",
-        },
-        {
-          type: "line",
-          label: "Gym session",
-          data: recent.map((entry) => (entry.gym !== "None" ? 1 : 0)),
-          borderColor: "#c6811f",
-          backgroundColor: "#c6811f",
-          yAxisID: "y1",
-          tension: 0,
-          pointRadius: 4,
-        },
-      ],
-    },
-    options: baseChartOptions({
-      scales: {
-        y: {
-          position: "left",
-          suggestedMin: 0,
-          suggestedMax: 16000,
-          ticks: {
-            callback: (value) => formatNumber(value),
-          },
-        },
-        y1: {
-          position: "right",
-          grid: { drawOnChartArea: false },
-          suggestedMin: 0,
-          suggestedMax: Math.ceil(distanceMax + 2),
-        },
-      },
-    }),
-  });
-}
-
-function renderHabitChart(entries) {
-  const recent = entries.slice(-CHART_WINDOW);
-  const hasData = recent.length > 0;
-  setChartState("habitChart", hasData, "Save a few days to unlock this chart.");
-  if (!hasData) {
-    destroyChart("habitChart");
-    return;
-  }
-
-  upsertChart("habitChart", {
-    type: "line",
-    data: {
-      labels: recent.map((entry) => formatDateShort(entry.date)),
-      datasets: [
-        {
-          label: "Pages",
-          data: recent.map((entry) => entry.pages),
-          borderColor: "#7f8f3e",
-          backgroundColor: "rgba(127, 143, 62, 0.12)",
-          yAxisID: "y",
-          tension: 0.3,
-          pointRadius: 3,
-        },
-        {
-          label: "Spanish",
-          data: recent.map((entry) => entry.spanish),
-          borderColor: "#2f7a52",
-          backgroundColor: "rgba(47, 122, 82, 0.12)",
-          yAxisID: "y",
-          tension: 0.3,
-          pointRadius: 3,
-        },
-        {
-          label: "Screentime",
-          data: recent.map((entry) => entry.screenTime),
-          borderColor: "#b4533f",
-          backgroundColor: "rgba(180, 83, 63, 0.12)",
-          yAxisID: "y1",
-          tension: 0.3,
-          pointRadius: 3,
-        },
-      ],
-    },
-    options: baseChartOptions({
-      scales: {
-        y: { suggestedMin: 0, suggestedMax: 220 },
-        y1: {
-          position: "right",
-          grid: { drawOnChartArea: false },
-          suggestedMin: 0,
-          suggestedMax: 220,
-        },
-      },
-    }),
-  });
-}
-
-function renderSleepChart(entries) {
-  const recent = entries.slice(-CHART_WINDOW);
-  const hasData = recent.length > 0;
-  setChartState("sleepChart", hasData, "Save a few days to unlock this chart.");
-  if (!hasData) {
-    destroyChart("sleepChart");
-    return;
-  }
-
-  upsertChart("sleepChart", {
-    type: "line",
-    data: {
-      labels: recent.map((entry) => formatDateShort(entry.date)),
-      datasets: [
-        {
-          label: "Wakeup",
-          data: recent.map((entry) => timeToMinutes(entry.wakeTime)),
-          borderColor: "#2f7a52",
-          backgroundColor: "rgba(47, 122, 82, 0.12)",
-          tension: 0.26,
-          pointRadius: 3,
-        },
-        {
-          label: "Bed time",
-          data: recent.map((entry) => normaliseBedTime(entry.bedTime)),
-          borderColor: "#c6811f",
-          backgroundColor: "rgba(198, 129, 31, 0.12)",
-          tension: 0.26,
-          pointRadius: 3,
-        },
-      ],
-    },
-    options: baseChartOptions({
-      scales: {
-        y: {
-          suggestedMin: 300,
-          suggestedMax: 1500,
-          ticks: {
-            callback: (value) => formatClock(value),
-          },
-        },
-      },
-    }),
-  });
-}
-
-function baseChartOptions(overrides = {}) {
-  const base = {
-    responsive: true,
-    maintainAspectRatio: false,
-    plugins: {
-      legend: {
-        labels: {
-          color: "#6d5b48",
-          usePointStyle: true,
-          boxWidth: 10,
-          boxHeight: 10,
-        },
-      },
-      tooltip: {
-        backgroundColor: "rgba(46, 37, 28, 0.92)",
-        titleColor: "#fffaf2",
-        bodyColor: "#fffaf2",
-      },
-    },
-    scales: {
-      x: {
-        ticks: { color: "#6d5b48" },
-        grid: { color: "rgba(90, 67, 43, 0.08)" },
-      },
-      y: {
-        ticks: { color: "#6d5b48" },
-        grid: { color: "rgba(90, 67, 43, 0.08)" },
-      },
-    },
-  };
-
-  return deepMerge(base, overrides);
-}
-
-function upsertChart(id, config) {
-  if (typeof Chart === "undefined") {
-    setChartState(id, false, "Charts need an internet connection to load Chart.js.");
-    return;
-  }
-
-  destroyChart(id);
-  const canvas = document.getElementById(id);
-  chartStore[id] = new Chart(canvas.getContext("2d"), config);
-}
-
-function destroyChart(id) {
-  if (chartStore[id]) {
-    chartStore[id].destroy();
-    delete chartStore[id];
-  }
-}
-
-function setChartState(id, hasData, message) {
-  const canvas = document.getElementById(id);
-  const empty = document.querySelector(`[data-empty-for="${id}"]`);
-  if (!canvas || !empty) {
-    return;
-  }
-
-  canvas.style.display = hasData ? "block" : "none";
-  empty.textContent = message;
-  empty.classList.toggle("is-visible", !hasData);
-}
-
 function evaluateEntry(entry) {
   const metrics = {
     calories: evaluateCalories(entry.calories),
+    water: evaluateWater(entry.water),
+    creatine: evaluateCreatine(entry.creatine),
     protein: evaluateProtein(entry.protein),
     carbs: evaluateCarbs(entry.carbs),
     fats: evaluateFats(entry.fats),
-    water: evaluateWater(entry.water),
     exercise: evaluateExercise(entry.runKm, entry.swimKm, entry.gym),
     steps: evaluateSteps(entry.steps),
-    pages: evaluatePages(entry.pages),
+    meditation: evaluateMeditation(entry.meditation),
+    reading: evaluateReading(entry.reading),
     spanish: evaluateSpanish(entry.spanish),
     screenTime: evaluateScreenTime(entry.screenTime),
     wakeTime: evaluateWakeTime(entry.wakeTime),
@@ -855,6 +519,13 @@ function evaluateWater(value) {
   return { status: "red" };
 }
 
+function evaluateCreatine(value) {
+  if (!value) return { status: "neutral" };
+  if (value === "Y") return { status: "green" };
+  if (value === "N") return { status: "red" };
+  return { status: "neutral" };
+}
+
 function evaluateExercise(runKm, swimKm, gym) {
   if (pendingMetric(runKm) || pendingMetric(swimKm) || !gym) return { status: "neutral" };
   const score = (runKm > 0 ? 1 : 0) + (swimKm > 0 ? 1 : 0) + (gym !== "None" ? 1 : 0);
@@ -870,7 +541,14 @@ function evaluateSteps(value) {
   return { status: "red" };
 }
 
-function evaluatePages(value) {
+function evaluateMeditation(value) {
+  if (pendingMetric(value)) return { status: "neutral" };
+  if (value > 10) return { status: "green" };
+  if (value >= 1) return { status: "amber" };
+  return { status: "red" };
+}
+
+function evaluateReading(value) {
   if (pendingMetric(value)) return { status: "neutral" };
   if (value >= 20) return { status: "green" };
   if (value >= 1) return { status: "amber" };
@@ -935,38 +613,42 @@ function exportCsv() {
   const rows = [
     [
       "date",
+      "wakeTime",
+      "bedTime",
       "calories",
+      "water",
+      "creatine",
       "protein",
       "carbs",
       "fats",
-      "water",
-      "steps",
       "runKm",
       "swimKm",
       "gym",
-      "pages",
+      "steps",
+      "meditation",
+      "reading",
       "spanish",
       "screenTime",
-      "wakeTime",
-      "bedTime",
       "overallStatus",
     ],
     ...entries.map((entry) => [
       entry.date,
+      entry.wakeTime,
+      entry.bedTime,
       entry.calories,
+      entry.water.toFixed(1),
+      entry.creatine,
       entry.protein,
       entry.carbs,
       entry.fats,
-      entry.water.toFixed(1),
-      entry.steps,
       entry.runKm.toFixed(1),
       entry.swimKm.toFixed(1),
       entry.gym,
-      entry.pages,
+      entry.steps,
+      entry.meditation,
+      entry.reading,
       entry.spanish,
       entry.screenTime,
-      entry.wakeTime,
-      entry.bedTime,
       evaluateEntry(entry).overall.status,
     ]),
   ];
@@ -1059,20 +741,22 @@ function normaliseImportedEntry(raw) {
 
   return {
     date: raw.date,
+    wakeTime: raw.wakeTime || "",
+    bedTime: raw.bedTime || "",
     calories: numberValue(raw.calories),
+    water: numberValue(raw.water),
+    creatine: raw.creatine || "",
     protein: numberValue(raw.protein),
     carbs: numberValue(raw.carbs),
     fats: numberValue(raw.fats),
-    water: numberValue(raw.water),
-    steps: numberValue(raw.steps),
     runKm: numberValue(raw.runKm),
     swimKm: numberValue(raw.swimKm),
     gym: raw.gym || "None",
-    pages: numberValue(raw.pages),
+    steps: numberValue(raw.steps),
+    meditation: numberValue(raw.meditation),
+    reading: numberValue(raw.reading ?? raw.pages),
     spanish: numberValue(raw.spanish),
     screenTime: numberValue(raw.screenTime),
-    wakeTime: raw.wakeTime || "",
-    bedTime: raw.bedTime || "",
   };
 }
 
@@ -1132,8 +816,32 @@ function countOverallStatuses(entries) {
   );
 }
 
+function countMissedDays(entries) {
+  const today = new Date(`${getTodayLocalDate()}T00:00:00`);
+  const start = new Date(`${DIET_START_DATE}T00:00:00`);
+
+  if (today <= start) {
+    return 0;
+  }
+
+  const recorded = new Set(entries.map((entry) => entry.date));
+  let missed = 0;
+
+  for (const date = new Date(start); date < today; date.setDate(date.getDate() + 1)) {
+    if (!recorded.has(formatDateKey(date))) {
+      missed += 1;
+    }
+  }
+
+  return missed;
+}
+
 function sum(entries, key) {
   return entries.reduce((total, entry) => total + (Number(entry[key]) || 0), 0);
+}
+
+function average(entries, key) {
+  return entries.length ? sum(entries, key) / entries.length : 0;
 }
 
 function numberValue(value) {
@@ -1185,6 +893,10 @@ function formatNumber(value) {
   return new Intl.NumberFormat().format(value);
 }
 
+function formatPercent(value) {
+  return `${Math.round(value * 100)}%`;
+}
+
 function getTodayLocalDate() {
   const now = new Date();
   const offset = now.getTimezoneOffset() * 60000;
@@ -1196,6 +908,21 @@ function formatDateKey(date) {
   const month = String(date.getMonth() + 1).padStart(2, "0");
   const day = String(date.getDate()).padStart(2, "0");
   return `${year}-${month}-${day}`;
+}
+
+function getMondayIndex(date) {
+  return (date.getDay() + 6) % 7;
+}
+
+function minutesToTimeValue(totalMinutes) {
+  const hours = String(Math.floor(totalMinutes / 60)).padStart(2, "0");
+  const minutes = String(totalMinutes % 60).padStart(2, "0");
+  return `${hours}:${minutes}`;
+}
+
+function formatTimeSelectLabel(totalMinutes) {
+  const value = minutesToTimeValue(totalMinutes);
+  return formatClock(timeToMinutes(value));
 }
 
 function csvCell(value) {
@@ -1251,22 +978,4 @@ function showToast(message) {
   showToast.timer = setTimeout(() => {
     dom.toast.classList.remove("is-visible");
   }, 2400);
-}
-
-function deepMerge(base, overrides) {
-  const merged = { ...base };
-  Object.keys(overrides || {}).forEach((key) => {
-    const baseValue = merged[key];
-    const overrideValue = overrides[key];
-    if (isPlainObject(baseValue) && isPlainObject(overrideValue)) {
-      merged[key] = deepMerge(baseValue, overrideValue);
-    } else {
-      merged[key] = overrideValue;
-    }
-  });
-  return merged;
-}
-
-function isPlainObject(value) {
-  return Boolean(value) && typeof value === "object" && !Array.isArray(value);
 }

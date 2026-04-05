@@ -30,79 +30,43 @@
         <div class="section-heading">
           <p class="eyebrow">Overview</p>
           <h2 id="overviewHeading">Autumn reset, tracked simply</h2>
-          <p>
-            This placeholder overview focuses on consistency: eat within target calories and macros, hydrate well,
-            train often, keep steps up, read, practice Spanish, sleep earlier, and protect time from screens.
-          </p>
         </div>
 
-        <div class="panel-grid">
-          <article class="panel">
-            <h3>What the plan is trying to do</h3>
-            <p>
-              The aim is a balanced cut and performance routine rather than an extreme program. Each day combines
-              enough fuel, enough protein, structured exercise, steady hydration, and calm routines that make the
-              rest of the day easier to win.
-            </p>
-          </article>
-
-          <article class="panel">
-            <h3>Daily scorecard</h3>
-            <p>
-              Every metric is graded red, amber, or green. The whole day turns green when at least 90% of metrics
-              are green, amber when at least 75% are green or amber, and red otherwise.
-            </p>
-          </article>
-
-          <article class="panel">
-            <h3>Core anchors</h3>
-            <ul class="overview-list">
-              <li>Calories and macros keep nutrition tight without being rigid.</li>
-              <li>Water, steps, and exercise support energy and recovery.</li>
-              <li>Reading and Spanish keep momentum outside the gym.</li>
-              <li>Earlier wake and bed times reinforce the whole plan.</li>
-            </ul>
-          </article>
-
-          <article class="panel">
-            <h3>How to use it</h3>
-            <ul class="overview-list">
-              <li>Pick a date and fill the form once per day.</li>
-              <li>Choose an existing date to edit that day's entry.</li>
-              <li>Use Results to review totals, trends, and consistency.</li>
-              <li>Export to CSV or JSON whenever you want a backup or an Excel import.</li>
-            </ul>
-          </article>
-        </div>
-
-        <article class="panel panel--targets">
+        <article class="panel">
           <div class="panel__header">
             <div>
-              <p class="eyebrow">Targets</p>
-              <h3>Current traffic-light rules</h3>
+              <p class="eyebrow">Scoring Guide</p>
+              <h3>Every metric at a glance</h3>
             </div>
           </div>
-          <div class="target-grid">
-            <div class="target-card">
-              <span>Nutrition</span>
-              <strong>Calories, protein, carbs, fats</strong>
-              <p>Balanced calories and macro targets drive the day.</p>
-            </div>
-            <div class="target-card">
-              <span>Hydration</span>
-              <strong>Water above 1.5L</strong>
-              <p>Fast visual check to keep the basics handled.</p>
-            </div>
-            <div class="target-card">
-              <span>Movement</span>
-              <strong>Steps plus exercise mix</strong>
-              <p>Running, swimming, and gym sessions roll into one exercise score.</p>
-            </div>
-            <div class="target-card">
-              <span>Recovery</span>
-              <strong>Earlier wake and bed times</strong>
-              <p>Sleep timing is tracked just like food and training.</p>
-            </div>
+          <div class="table-scroll">
+            <table class="score-table">
+              <thead>
+                <tr>
+                  <th>Metric</th>
+                  <th class="score-table__red">Red</th>
+                  <th class="score-table__amber">Amber</th>
+                  <th class="score-table__green">Green</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr><th>Calories</th><td>&lt;1500 or &gt;2500</td><td>1500-1899 or 2201-2500</td><td>1900-2200</td></tr>
+                <tr><th>Water</th><td>&lt;1.0L</td><td>1.0L-1.4L</td><td>1.5L+</td></tr>
+                <tr><th>Creatine</th><td>No</td><td>-</td><td>Yes</td></tr>
+                <tr><th>Protein</th><td>&lt;130g</td><td>130g-149g</td><td>150g+</td></tr>
+                <tr><th>Carbs</th><td>&lt;140g or &gt;300g</td><td>140g-179g or 251g-300g</td><td>180g-250g</td></tr>
+                <tr><th>Fats</th><td>&lt;45g or &gt;90g</td><td>45g-54g or 76g-90g</td><td>55g-75g</td></tr>
+                <tr><th>Exercise</th><td>No run, swim, or gym</td><td>Any 1 of run, swim, gym</td><td>Any 2 or more</td></tr>
+                <tr><th>Steps</th><td>&lt;8,000</td><td>8,000-9,999</td><td>10,000+</td></tr>
+                <tr><th>Meditation</th><td>0 mins</td><td>1-10 mins</td><td>11+ mins</td></tr>
+                <tr><th>Reading</th><td>0 pages</td><td>1-19 pages</td><td>20+ pages</td></tr>
+                <tr><th>Spanish</th><td>0 mins</td><td>1-19 mins</td><td>20+ mins</td></tr>
+                <tr><th>Screentime</th><td>121+ mins</td><td>61-120 mins</td><td>0-60 mins</td></tr>
+                <tr><th>Wakeup</th><td>After 9:00am</td><td>8:30am-9:00am</td><td>Before 8:30am</td></tr>
+                <tr><th>Bedtime</th><td>After 12:00am</td><td>10:00pm-12:00am</td><td>Before 10:00pm</td></tr>
+                <tr><th>Overall day</th><td>Anything else</td><td>75%+ green or amber</td><td>90%+ green</td></tr>
+              </tbody>
+            </table>
           </div>
         </article>
       </section>
@@ -127,7 +91,7 @@
             <span id="completionFill"></span>
           </div>
           <div class="status-panel__meta">
-            <span id="completionText">0 of 12 metrics complete</span>
+            <span id="completionText">0 of 14 metrics complete</span>
             <span id="statusBreakdown">0 green . 0 amber . 0 red</span>
           </div>
         </section>
@@ -136,15 +100,33 @@
           <article class="panel">
             <div class="panel__header">
               <div>
-                <p class="eyebrow">Set the day</p>
-                <h3>Date and nutrition</h3>
+                <p class="eyebrow">Daily Log</p>
+                <h3>Fill the scorecard for one day</h3>
               </div>
             </div>
-            <div class="field-grid">
+            <div class="field-grid field-grid--three">
               <label class="field-card">
                 <span class="field-card__title">Date</span>
                 <input id="date" name="date" type="date" required />
                 <span class="field-card__hint">One saved entry per date.</span>
+              </label>
+
+              <label class="field-card">
+                <span class="field-card__header">
+                  <span class="field-card__title">Wakeup</span>
+                  <span class="status-pill status-pill--neutral" data-badge-for="wakeTime">Pending</span>
+                </span>
+                <select id="wakeTime" name="wakeTime" required></select>
+                <span class="field-card__hint">5-minute increments, green before 8:30am.</span>
+              </label>
+
+              <label class="field-card">
+                <span class="field-card__header">
+                  <span class="field-card__title">Bedtime</span>
+                  <span class="status-pill status-pill--neutral" data-badge-for="bedTime">Pending</span>
+                </span>
+                <select id="bedTime" name="bedTime" required></select>
+                <span class="field-card__hint">5-minute increments, green before 10:00pm.</span>
               </label>
 
               <label class="field-card">
@@ -158,7 +140,29 @@
 
               <label class="field-card">
                 <span class="field-card__header">
-                  <span class="field-card__title">Protein (g)</span>
+                  <span class="field-card__title">Water</span>
+                  <span class="status-pill status-pill--neutral" data-badge-for="water">Pending</span>
+                </span>
+                <input id="water" name="water" type="number" min="0" max="5" step="0.1" required />
+                <span class="field-card__hint">To 1 decimal place, up to 5L.</span>
+              </label>
+
+              <label class="field-card">
+                <span class="field-card__header">
+                  <span class="field-card__title">Creatine</span>
+                  <span class="status-pill status-pill--neutral" data-badge-for="creatine">Pending</span>
+                </span>
+                <select id="creatine" name="creatine" required>
+                  <option value="">Select</option>
+                  <option value="Y">Y</option>
+                  <option value="N">N</option>
+                </select>
+                <span class="field-card__hint">Green if yes, red if no.</span>
+              </label>
+
+              <label class="field-card">
+                <span class="field-card__header">
+                  <span class="field-card__title">Protein</span>
                   <span class="status-pill status-pill--neutral" data-badge-for="protein">Pending</span>
                 </span>
                 <input id="protein" name="protein" type="number" min="0" max="400" step="1" required />
@@ -167,7 +171,7 @@
 
               <label class="field-card">
                 <span class="field-card__header">
-                  <span class="field-card__title">Carbs (g)</span>
+                  <span class="field-card__title">Carbs</span>
                   <span class="status-pill status-pill--neutral" data-badge-for="carbs">Pending</span>
                 </span>
                 <input id="carbs" name="carbs" type="number" min="0" max="500" step="1" required />
@@ -176,7 +180,7 @@
 
               <label class="field-card">
                 <span class="field-card__header">
-                  <span class="field-card__title">Fats (g)</span>
+                  <span class="field-card__title">Fats</span>
                   <span class="status-pill status-pill--neutral" data-badge-for="fats">Pending</span>
                 </span>
                 <input id="fats" name="fats" type="number" min="0" max="200" step="1" required />
@@ -185,24 +189,39 @@
 
               <label class="field-card">
                 <span class="field-card__header">
-                  <span class="field-card__title">Water (L)</span>
-                  <span class="status-pill status-pill--neutral" data-badge-for="water">Pending</span>
+                  <span class="field-card__title">Run</span>
+                  <span class="status-pill status-pill--neutral" data-badge-for="exercise">Pending</span>
                 </span>
-                <input id="water" name="water" type="number" min="0" max="5" step="0.1" required />
-                <span class="field-card__hint">To 1 decimal place, up to 5L.</span>
+                <input id="runKm" name="runKm" type="number" min="0" max="50" step="0.1" required />
+                <span class="field-card__hint">Distance in km, 0.0 if none.</span>
               </label>
-            </div>
-          </article>
 
-          <article class="panel">
-            <div class="panel__header panel__header--split">
-              <div>
-                <p class="eyebrow">Move</p>
-                <h3>Activity</h3>
-              </div>
-              <span class="status-pill status-pill--neutral" data-badge-for="exercise">Pending</span>
-            </div>
-            <div class="field-grid">
+              <label class="field-card">
+                <span class="field-card__header">
+                  <span class="field-card__title">Swim</span>
+                  <span class="status-pill status-pill--neutral" data-badge-for="exercise">Pending</span>
+                </span>
+                <input id="swimKm" name="swimKm" type="number" min="0" max="10" step="0.1" required />
+                <span class="field-card__hint">Distance in km, 0.0 if none.</span>
+              </label>
+
+              <label class="field-card">
+                <span class="field-card__header">
+                  <span class="field-card__title">Gym</span>
+                  <span class="status-pill status-pill--neutral" data-badge-for="exercise">Pending</span>
+                </span>
+                <select id="gym" name="gym">
+                  <option value="None">None</option>
+                  <option value="A">A</option>
+                  <option value="B">B</option>
+                  <option value="C">C</option>
+                  <option value="D">D</option>
+                  <option value="E">E</option>
+                  <option value="Other">Other</option>
+                </select>
+                <span class="field-card__hint">Exercise status uses run, swim, and gym together.</span>
+              </label>
+
               <label class="field-card">
                 <span class="field-card__header">
                   <span class="field-card__title">Steps</span>
@@ -213,53 +232,28 @@
               </label>
 
               <label class="field-card">
-                <span class="field-card__title">KM Run</span>
-                <input id="runKm" name="runKm" type="number" min="0" max="50" step="0.1" required />
-                <span class="field-card__hint">Enter 0.0 if there was no run.</span>
+                <span class="field-card__header">
+                  <span class="field-card__title">Meditation</span>
+                  <span class="status-pill status-pill--neutral" data-badge-for="meditation">Pending</span>
+                </span>
+                <input id="meditation" name="meditation" type="number" min="0" max="300" step="1" required />
+                <span class="field-card__hint">Red at 0, amber 1-10, green above 10.</span>
               </label>
 
-              <label class="field-card">
-                <span class="field-card__title">KM Swum</span>
-                <input id="swimKm" name="swimKm" type="number" min="0" max="10" step="0.1" required />
-                <span class="field-card__hint">Enter 0.0 if there was no swim.</span>
-              </label>
+              <div class="field-card field-card--ghost" aria-hidden="true"></div>
 
-              <label class="field-card">
-                <span class="field-card__title">Gym</span>
-                <select id="gym" name="gym">
-                  <option value="None">None</option>
-                  <option value="A">A</option>
-                  <option value="B">B</option>
-                  <option value="C">C</option>
-                  <option value="D">D</option>
-                  <option value="E">E</option>
-                  <option value="Other">Other</option>
-                </select>
-                <span class="field-card__hint">Any gym session counts toward exercise status.</span>
-              </label>
-            </div>
-          </article>
-
-          <article class="panel">
-            <div class="panel__header">
-              <div>
-                <p class="eyebrow">Habits</p>
-                <h3>Focus and downtime</h3>
-              </div>
-            </div>
-            <div class="field-grid">
               <label class="field-card">
                 <span class="field-card__header">
-                  <span class="field-card__title">Pages Read</span>
-                  <span class="status-pill status-pill--neutral" data-badge-for="pages">Pending</span>
+                  <span class="field-card__title">Reading</span>
+                  <span class="status-pill status-pill--neutral" data-badge-for="reading">Pending</span>
                 </span>
-                <input id="pages" name="pages" type="number" min="0" max="500" step="1" required />
+                <input id="reading" name="reading" type="number" min="0" max="500" step="1" required />
                 <span class="field-card__hint">Green at 20 pages or more.</span>
               </label>
 
               <label class="field-card">
                 <span class="field-card__header">
-                  <span class="field-card__title">Spanish (mins)</span>
+                  <span class="field-card__title">Spanish</span>
                   <span class="status-pill status-pill--neutral" data-badge-for="spanish">Pending</span>
                 </span>
                 <input id="spanish" name="spanish" type="number" min="0" max="300" step="1" required />
@@ -268,39 +262,11 @@
 
               <label class="field-card">
                 <span class="field-card__header">
-                  <span class="field-card__title">Screentime (mins)</span>
+                  <span class="field-card__title">Screentime</span>
                   <span class="status-pill status-pill--neutral" data-badge-for="screenTime">Pending</span>
                 </span>
                 <input id="screenTime" name="screenTime" type="number" min="0" max="500" step="1" required />
                 <span class="field-card__hint">Green at 60 minutes or less.</span>
-              </label>
-            </div>
-          </article>
-
-          <article class="panel">
-            <div class="panel__header">
-              <div>
-                <p class="eyebrow">Sleep</p>
-                <h3>Start and finish</h3>
-              </div>
-            </div>
-            <div class="field-grid">
-              <label class="field-card">
-                <span class="field-card__header">
-                  <span class="field-card__title">Wakeup Time</span>
-                  <span class="status-pill status-pill--neutral" data-badge-for="wakeTime">Pending</span>
-                </span>
-                <input id="wakeTime" name="wakeTime" type="time" step="300" required />
-                <span class="field-card__hint">Green before 8:30am.</span>
-              </label>
-
-              <label class="field-card">
-                <span class="field-card__header">
-                  <span class="field-card__title">Bed Time</span>
-                  <span class="status-pill status-pill--neutral" data-badge-for="bedTime">Pending</span>
-                </span>
-                <input id="bedTime" name="bedTime" type="time" step="300" required />
-                <span class="field-card__hint">Green before 10:00pm.</span>
               </label>
             </div>
           </article>
@@ -326,9 +292,11 @@
       <section class="screen" data-screen="results" aria-labelledby="resultsHeading">
         <div class="section-heading">
           <p class="eyebrow">Results</p>
-          <h2 id="resultsHeading">Totals and trends</h2>
-          <p>All charts use locally saved data and refresh every time you update an entry.</p>
+          <h2 id="resultsHeading">Totals and consistency</h2>
+          <p>Scores update from local browser data every time you save or edit a day.</p>
         </div>
+
+        <section class="totals-grid" id="totalsGrid"></section>
 
         <section class="panel panel--results-summary">
           <div class="panel__header panel__header--split">
@@ -339,8 +307,9 @@
             <span class="panel__subtle">Local-first and free.</span>
           </div>
           <p class="results-copy">
-            Export CSV for Excel charts and pivots, or export JSON for a full backup. Import either file back into
-            the app to restore or merge days by date.
+            Data is stored in this browser on this device. Refreshing the page keeps it here, but another browser or
+            device will not see it unless you export and import your data. CSV is best for Excel; JSON is best for a
+            full backup.
           </p>
           <div class="button-row">
             <button type="button" class="button button--secondary" id="exportCsvButton">Export CSV</button>
@@ -350,82 +319,21 @@
           </div>
         </section>
 
-        <section class="totals-grid" id="totalsGrid"></section>
-
-        <section class="chart-grid">
-          <article class="panel chart-card">
-            <div class="panel__header">
-              <div>
-                <p class="eyebrow">Daily mix</p>
-                <h3>Status distribution</h3>
-              </div>
-            </div>
-            <canvas id="statusChart" height="220"></canvas>
-            <p class="chart-empty" data-empty-for="statusChart" hidden>Save a few days to unlock this chart.</p>
-          </article>
-
-          <article class="panel chart-card">
-            <div class="panel__header">
-              <div>
-                <p class="eyebrow">Calories</p>
-                <h3>Intake trend</h3>
-              </div>
-            </div>
-            <canvas id="calorieChart" height="220"></canvas>
-            <p class="chart-empty" data-empty-for="calorieChart" hidden>Save a few days to unlock this chart.</p>
-          </article>
-
-          <article class="panel chart-card">
-            <div class="panel__header">
-              <div>
-                <p class="eyebrow">Macros</p>
-                <h3>Protein, carbs, fats</h3>
-              </div>
-            </div>
-            <canvas id="macroChart" height="240"></canvas>
-            <p class="chart-empty" data-empty-for="macroChart" hidden>Save a few days to unlock this chart.</p>
-          </article>
-
-          <article class="panel chart-card">
-            <div class="panel__header">
-              <div>
-                <p class="eyebrow">Movement</p>
-                <h3>Steps and exercise</h3>
-              </div>
-            </div>
-            <canvas id="movementChart" height="240"></canvas>
-            <p class="chart-empty" data-empty-for="movementChart" hidden>Save a few days to unlock this chart.</p>
-          </article>
-
-          <article class="panel chart-card">
-            <div class="panel__header">
-              <div>
-                <p class="eyebrow">Habits</p>
-                <h3>Reading, Spanish, and screentime</h3>
-              </div>
-            </div>
-            <canvas id="habitChart" height="240"></canvas>
-            <p class="chart-empty" data-empty-for="habitChart" hidden>Save a few days to unlock this chart.</p>
-          </article>
-
-          <article class="panel chart-card">
-            <div class="panel__header">
-              <div>
-                <p class="eyebrow">Sleep</p>
-                <h3>Wake and bed timing</h3>
-              </div>
-            </div>
-            <canvas id="sleepChart" height="240"></canvas>
-            <p class="chart-empty" data-empty-for="sleepChart" hidden>Save a few days to unlock this chart.</p>
-          </article>
-        </section>
-
         <section class="panel">
           <div class="panel__header">
             <div>
               <p class="eyebrow">Consistency</p>
-              <h3>42-day heatmap</h3>
+              <h3>Last 28 days</h3>
             </div>
+          </div>
+          <div class="heatmap-labels">
+            <span>Mon</span>
+            <span>Tue</span>
+            <span>Wed</span>
+            <span>Thu</span>
+            <span>Fri</span>
+            <span>Sat</span>
+            <span>Sun</span>
           </div>
           <div id="consistencyHeatmap" class="heatmap"></div>
         </section>
@@ -442,10 +350,9 @@
   <div class="toast" id="toast" aria-live="polite"></div>
 
   <noscript>
-    <div class="noscript-banner">This tracker needs JavaScript enabled to save entries and render charts.</div>
+    <div class="noscript-banner">This tracker needs JavaScript enabled to save entries and load your results.</div>
   </noscript>
 
-  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
   <script src="script.js"></script>
 </body>
 </html>
